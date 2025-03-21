@@ -1,18 +1,14 @@
---Ejercicio3
---Referencia de la libreria (nub) Para eliminar tipos de datos repetidos
---https://hackage.haskell.org/package/universum-0.9.2/docs/Nub.html
+import Data.List (nub)
 
---Ver si funcionan las funciones  
-{-
 
-{-FUNCIONA-}
+--Aplicar esta funcion en las otras
 
 --Funcion para identificar el numero maximo de primos a multiplicar
-indenPrimos:: [Integer] -> Integer
-indenPrimos [] = 0
-indenPrimos (x:xs)
+indenPrimos1:: [Integer] -> Integer
+indenPrimos1 [] = 0
+indenPrimos1 (x:xs)
     | x == 0 = 0
-    | otherwise = 1 + indenPrimos xs
+    | otherwise = 1 + indenPrimos1 xs
 
 -- Función que verifica si un número es primo
 esPrimo :: Integer -> Bool
@@ -40,18 +36,9 @@ primosAux m n p
 --Funcion para generar el minimo de primos despues de saber cual es el maximo
 generarPrimos:: [Integer] -> [Integer]
 generarPrimos [] = [] 
-generarPrimos (x:xs) = listaDePrimos (indenPrimos (x:xs))
+generarPrimos (x:xs) = listaDePrimos (indenPrimos1 (x:xs))
 
-main:: IO()
-main  = do
 
-        let lista = [1, 2, 4, 5, 8, 9, 10, 11, 90, 56]
-	print (generarPrimos lista)
-	print (indenPrimos lista)
-	print (indenPrimos lista)
-	print (listaDePrimos 10)
--}
-import Data.List (nub)
 
 --Funcion Prop definida anteriormente con dos varaibles mas:"Parenizq Prop" y "Parender Prop"
 data Prop = Var String
@@ -91,43 +78,14 @@ indenPrimos (x:xs)
     	| x == ":|" = True
 	| x == ":/" = True   -- Es una operación
 
-{-
 -- Función que evalúa ambas funciones para devolver la lista de primos generada por la Proposicion logica
 evaluarExpresion :: Prop -> Integer
-evaluarExpresion expr = indenPrimos (idenVarYOp expr)
--}
+evaluarExpresion expr = indenPrimos(idenVarYOp expr)
 
--- Función principal
-main :: IO ()
-main = do
-    let exp = Parenizq (Var "a" :& Parender (Var "b" :| Var "a"))   -- Un ejemplo donde "a" aparece dos veces
-    print (nub (idenVarYOp exp))  -- Imprime las variables y los operadores sin duplicados
-  --  print evaluarExpresion exp
+--Funcion evaluamos un entero para una lista de valoes
+listaDePrimos2 ::  Prop -> [Integer]
+listaDePrimos2 expr = primosAux 2 (evaluarExpresion expr) []
 
-{-
---Funcion que genera una tupla de lista de potencias y las multiplica
-tuplaPotencia :: [Integer] -> [Integer] -> Integer
-tuplaPotencia [] [] = 1  -- Base case: ambas listas vacías, se retorna 0
-tuplaPotencia (x:xs) (y:ys) = ((x^y) * tuplaPotencia xs ys) --Multiplica las potencias de cada entrada de cada lista
-
-main:: IO()
-main  = do
-
-        let lista1 = [2, 2, 2]
-	let lista2 = [1, 2, 3]
-	print (tuplaPotencia lista1 lista2)
--}
-
-{-
---Funcion Prop definida anteriormente 
-data Prop = Var String
-          | No Prop
-          | Prop :& Prop
-          | Prop :| Prop
-          | Prop :/ Prop
-          | Parenizq Prop
-          | Parender Prop 
-  deriving (Eq, Show)
 
 --Debe devolver una lista de Prop, de tal manera que haga duplas con primos
 enumProp :: Prop -> [Integer] -> [Integer]
@@ -140,28 +98,15 @@ enumProp (p :/ q) (x:xs) = enumProp p xs ++ enumProp q xs
 enumProp (Parenizq p) (x:xs) = enumProp p xs
 enumProp (Parender p) (x:xs) = enumProp p xs
 
-main:: IO()
-main  = do
-{-No fuciona -}
-    let prop1 = Var "a" :& Var "b"  -- Conjunción de dos proposiciones (Var "a" y Var "b")
-    let prop2 = No (Var "c") :& Var "d"  -- Negación de (Var "c") y conjunción con (Var "d")
-    let prop3 = Parenizq (Var "e") :& Parender (Var "f")  -- Paréntesis izquierdo y derecho
-
-    -- Números primos para probar
-    let primes = [2, 3, 5, 7, 11, 13]
-
-    -- Evaluamos las proposiciones con la lista de números primos
-    let result1 = enumProp prop1 primes
-    let result2 = enumProp prop2 primes
-    let result3 = enumProp prop3 primes
-
-    -- Mostramos los resultados
-    print ("Resultado para prop1 (Var 'a' :& Var 'b'): " ++ show result1)
-    print ("Resultado para prop2 (No (Var 'c') :& Var 'd'): " ++ show result2)
-    print ("Resultado para prop3 (Parenizq (Var 'e') :& Parender (Var 'f')): " ++ show result3)
 
 
---        let lista = [1, 2, 4, 5, 8, 9, 10, 11, 90, 56]
---	print (generarPrimos lista)
 
--}
+
+
+-- Función principal
+main :: IO ()
+main = do
+    let exp = Parenizq (Var "a" :& Parender (Var "b" :| Var "a"))   -- Un ejemplo donde "a" aparece dos veces
+    print (nub (idenVarYOp exp))  -- Imprime las variables y los operadores sin duplicados
+    print (evaluarExpresion exp)
+    print (listaDePrimos2 exp)
