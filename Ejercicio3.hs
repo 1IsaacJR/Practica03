@@ -1,9 +1,11 @@
 --Ejercicio3
-
+--Referencia de la libreria (nub) Para eliminar tipos de datos repetidos
+--https://hackage.haskell.org/package/universum-0.9.2/docs/Nub.html
 
 --Ver si funcionan las funciones  
 {-
 {-FUNCIONA-}
+
 --Funcion para identificar el numero maximo de primos a multiplicar
 indenPrimos:: [Integer] -> Integer
 indenPrimos [] = 0
@@ -21,14 +23,95 @@ esPrimo n
   
 -- Función que devuelve una lista de números primos menores o iguales a un número dado
 listaDePrimos :: Integer -> [Integer]
-listaDePrimos n = filter esPrimo [2..n]
+listaDePrimos n = primosAux 2 n []
+
+
+-- Función auxiliar que busca los primeros 'n' primos
+primosAux :: Integer -> Integer -> [Integer] -> [Integer]
+primosAux _ 0 p = p  -- Caso base: si ya tenemos 'n' primos, devolvemos la lista
+primosAux m n p
+  | esPrimo m = primosAux (m + 1) (n - 1) (p ++ [m])  -- Si es primo, lo agregamos
+  | otherwise = primosAux (m + 1) n p  -- Si no es primo, continuamos
+
+
+
+{-Esta funcion es para cuando tengamos la lista de primos generados por las variables-}
 
 --Funcion para generar el minimo de primos despues de saber cual es el maximo
 generarPrimos:: [Integer] -> [Integer]
 generarPrimos [] = [] 
 generarPrimos (x:xs) = listaDePrimos (indenPrimos (x:xs))
+
+main:: IO()
+main  = do
+
+        let lista = [1, 2, 4, 5, 8, 9, 10, 11, 90, 56]
+	print (generarPrimos lista)
+	print (indenPrimos lista)
+	print (indenPrimos lista)
+	print (listaDePrimos 10)
+-}
+import Data.List (nub)
+
+--Funcion Prop definida anteriormente 
+data Prop = Var String
+          | No Prop
+          | Prop :& Prop
+          | Prop :| Prop
+          | Prop :/ Prop
+          | Parenizq Prop
+          | Parender Prop
+  deriving (Eq, Show)
+
+-- Función para identificar variables y operadores para una lista de Strings
+idenVarYOp:: Prop -> [String]
+idenVarYOp (Var v) = [v]  -- Solo una variable
+idenVarYOp (No p) = ["No"] ++ idenVarYOp p  -- Operador "No"
+idenVarYOp (p :& q) = [":&"] ++ idenVarYOp p ++ idenVarYOp q  -- Operador ":&"
+idenVarYOp (p :| q) = [":|"] ++ idenVarYOp p ++ idenVarYOp q  -- Operador ":|"
+idenVarYOp (p :/ q) = [":/"] ++ idenVarYOp p ++ idenVarYOp q  -- Operador ":/"
+idenVarYOp (Parenizq p) = ["Parenizq"] ++ idenVarYOp p  -- Operador "Parenizq"
+idenVarYOp (Parender p) = ["Parender"] ++ idenVarYOp p  -- Operador "Parender"
+
+-- Función principal
+main :: IO ()
+main = do
+    let exp = Parenizq (Var "a" :& Parender (Var "b" :| Var "a"))   -- Un ejemplo donde "a" aparece dos veces
+    print (nub (idenVarYOp exp))  -- Imprime las variables y los operadores sin duplicados
+
+
+{-
+--Funcion que genera una tupla de lista de potencias y las multiplica
+tuplaPotencia :: [Integer] -> [Integer] -> Integer
+tuplaPotencia [] [] = 1  -- Base case: ambas listas vacías, se retorna 0
+tuplaPotencia (x:xs) (y:ys) = ((x^y) * tuplaPotencia xs ys) --Multiplica las potencias de cada entrada de cada lista
+
+main:: IO()
+main  = do
+
+        let lista1 = [2, 2, 2]
+	let lista2 = [1, 2, 3]
+	print (tuplaPotencia lista1 lista2)
 -}
 
+{-
+
+--Funcion para pedir un primo para enumerar la variable de haskell y agregarlo a la enumeracion de primos
+funPedirnum:: IO()-> String -> Integer  
+funPedirnum putStrLn "Introduce un número:" = input <- getLine
+
+
+main:: IO()
+main  = do
+
+        let lista1 = [2, 2, 2]
+	let lista2 = [1, 2, 3]
+	print (tuplaPotencia lista1 lista2)
+-}
+
+
+
+{-
 --Funcion Prop definida anteriormente 
 data Prop = Var String
           | No Prop
@@ -39,6 +122,7 @@ data Prop = Var String
           | Parender Prop 
   deriving (Eq, Show)
 
+--Debe devolver una lista de Prop, de tal manera que haga duplas con primos
 enumProp :: Prop -> [Integer] -> [Integer]
 enumProp _ [] = []  -- Caso base: si la lista está vacía, devolvemos una lista vacía
 enumProp (Var _) (x:xs) = x : enumProp (Var "") xs  
@@ -48,7 +132,6 @@ enumProp (p :| q) (x:xs) = enumProp p xs ++ enumProp q xs
 enumProp (p :/ q) (x:xs) = enumProp p xs ++ enumProp q xs 
 enumProp (Parenizq p) (x:xs) = enumProp p xs
 enumProp (Parender p) (x:xs) = enumProp p xs
-
 
 main:: IO()
 main  = do
@@ -74,3 +157,4 @@ main  = do
 --        let lista = [1, 2, 4, 5, 8, 9, 10, 11, 90, 56]
 --	print (generarPrimos lista)
 
+-}

@@ -26,6 +26,16 @@ data Prop = Var String
  | Prop "(" Prop
 deriving(Eq, Show)
 
+IDEA DE IMPLEMENTACION DEL 2
+-Funcion que devuelva una lisa de variables reconocidas en la formula:
+	 ejemplo: "(p -> q) v (neg p -> neg q)" = ["(","p","->"..."q"]
+enumProp :: Prop -> [Integer] -> [Vars]
+- Generamos una lista de primos dependiendo el numero de ariables de la lista anterior
+  	 ejemplo:  ["(","p","->"..."q"] = 13(variables) = [2,3,7..](generamos la lista de primos)
+- Funcion que genere duplas entre la lista de primos posibles y el numero de primos de cada variable
+  	 ejemplo:  "(p -> q) v (neg p -> neg q)"(de esta expresion obtuvimos los primos) = [7,29,7,29,3,2..] 
+	 	        (lista obtenida de la enumeracion de primos)[7,29,7,29,3,2..] * (lista del numero total de primos a multiplicar)[2,3,7..]
+			
 -}
 
 --Funcion Prop definida anteriormente 
@@ -50,13 +60,6 @@ enumProp (Parender p) (x:xs) = enumProp p xs
 
 --Funcion donde se multiplica por cada primo posible de la lista de primos
 
---Funcion para identificar el numero maximo de primos a multiplicar
-indenPrimos:: [Integer] -> Integer
-indenPrimos [] = 0
-indenPrimos (x:xs)
-    | x == 0 = 0
-    | otherwise = 1 + indenPrimos xs
-
 -- Función que verifica si un número es primo
 esPrimo :: Integer -> Bool
 esPrimo n
@@ -67,10 +70,17 @@ esPrimo n
   
 -- Función que devuelve una lista de números primos menores o iguales a un número dado
 listaDePrimos :: Integer -> [Integer]
+--Utilizamos la funcion "filter" que facilita tomar una lista con un indice i hasta un indice i + 1
 listaDePrimos n = filter esPrimo [2..n]
 
 --Funcion para generar el minimo de primos despues de saber cual es el maximo
 generarPrimos:: Integer -> [Integer]
 generarPrimos n = listaDePrimos n
 
+--Funcion para identificar el numero maximo de primos a multiplicar
+indenPrimos:: [Integer] -> Integer
+indenPrimos [] = 0
+indenPrimos (x:xs)
+    | x == 0 = 0
+    | otherwise = 1 + indenPrimos xs
 
